@@ -19,6 +19,12 @@ build-dev:
 run-dev:
 	docker-compose -f docker-compose-dev.yml up -d
 
+build-prod:
+	docker build -t medias-uptodate-prod:latest -f Dockerfile-prod .
+
+update_database:
+	docker run -v ${PWD}:/app -v /mnt/samba_sfr:/app/datas/medias medias-uptodate-prod:latest python -m src.update_database
+
 ##
 ## PYTHON COMMANDS
 ##

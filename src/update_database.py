@@ -98,7 +98,8 @@ def update_medias(config, elements):
             with open(fileout, 'wb') as openfile:
                 for chunk in req.iter_content(chunk_size=config.getint('download', 'chunk_size')):
                     openfile.write(chunk)
-                    break
+                    if config.getint('download', 'test') == 1:
+                        break
                 add_to_already_downloaded(config, medias)
 
 
@@ -117,6 +118,7 @@ def read_already_download(config):
 
 if __name__ == '__main__':
 
+    # logs
     requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
     logging.basicConfig(filename=config.get('log', 'filename'), level=logging.DEBUG, format='%(asctime)s %(message)s')
 
