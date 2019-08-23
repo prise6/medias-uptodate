@@ -1,0 +1,9 @@
+.vscode
+config/*
+datas/*
+logs/*
+__pycache__
+
+*.code-workspace
+
+!*.gitkeep

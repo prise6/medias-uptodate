@@ -1,0 +1,19 @@
+version: "3"
+services:
+  python:
+    image: medias-uptodate-dev:latest
+    container_name: medias-uptodate
+    command: tail -f /dev/null
+    networks:
+      - netproxy
+    volumes:
+      - ${PWD}:/app
+      - ${PWD}/datas/medias:/medias
+    labels:
+      - "traefik.enable=true"
+      - "traefik.port=3000"
+    
+networks:
+  netproxy:
+    external:
+      name: netproxy

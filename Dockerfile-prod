@@ -1,0 +1,11 @@
+FROM python:3.7-alpine
+
+RUN apk --no-cache add make
+
+WORKDIR /app
+
+COPY requirements.txt Makefile /app/
+
+RUN make requirements
+
+COPY . /app

@@ -1,0 +1,4 @@
+ptvsd==4.3.2
+requests==2.22
+beautifulsoup4==4.8.0
+configparser==3.8.1
