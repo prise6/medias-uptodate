@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import urllib.request 
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
 import base64
 import ssl
 import requests
@@ -10,11 +11,9 @@ import os
 import json
 import sys
 import logging
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-
-
 
 from src import config
+
 
 def request_server(config, uri, stream=False):
     return requests.get(uri,
@@ -83,7 +82,7 @@ def filter_medias(config, elements):
     today = datetime.datetime.now().date()
     elements = [el for el in elements if (today - el[3].date()).days <= config.getint('download', 'diff_days')]
     ## non présent
-    already_downloaded = os.listdir(config.get('directory', 'medias'))
+    already_downloaded = read_already_download(config)
     elements = [el for el in elements if el[2] not in already_downloaded]
 
     return elements
@@ -92,13 +91,28 @@ def filter_medias(config, elements):
 def update_medias(config, elements):
     
     for medias in elements:
-        fileout = os.path.join(config.get('directory', 'medias'), medias[2])
+        fileout = os.path.join(config.get('directory', 'downloads'), medias[2])
 
         with request_server(config, medias[1], stream=True) as req:
             req.raise_for_status()
             with open(fileout, 'wb') as openfile:
                 for chunk in req.iter_content(chunk_size=config.getint('download', 'chunk_size')):
                     openfile.write(chunk)
+                    break
+                add_to_already_downloaded(config, medias)
+
+
+def add_to_already_downloaded(config, element):
+
+    infile = os.path.join(config.get('download', 'already_downloaded'))
+    with open(infile, 'a') as outfile:
+        outfile.write(str(element[2]))
+        outfile.write("\n")
+
+
+def read_already_download(config):
+
+    return [line.strip() for line in open(config.get('download', 'already_downloaded'), 'r').readlines()]
 
 
 if __name__ == '__main__':
@@ -115,13 +129,3 @@ if __name__ == '__main__':
 
     # téléchargement
     update_medias(config, elements)
-
-    # list
-    infile = os.path.join(config.get('directory', 'datas'), 'elements')
-    with open(infile, 'w+') as outfile:
-        for el in elements:
-            for item in el:
-                outfile.write(str(item))
-                outfile.write(", ")
-            outfile.write("\n") 
-    
