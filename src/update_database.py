@@ -97,7 +97,7 @@ def filter_medias(config, elements, limit, names):
     today = datetime.datetime.now().date()
     elements = [el for el in elements if (today - el[3].date()).days <= config.getint('download', 'diff_days')]
 
-    if limit:
+    if limit >= 0:
         elements = elements[:limit]
 
     return elements
