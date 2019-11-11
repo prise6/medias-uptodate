@@ -11,6 +11,8 @@ import os
 import json
 import sys
 import logging
+import click
+import re
 
 from src import config
 
@@ -73,17 +75,30 @@ def parse_rows(config, uri, rows):
 
     return elements
 
-def filter_medias(config, elements):
-
+def filter_medias(config, elements, limit, names):
     # filtres:
     ## medias seulement
     elements = [el for el in elements if el[0] == 1]
-    ## datant d'une semaine
-    today = datetime.datetime.now().date()
-    elements = [el for el in elements if (today - el[3].date()).days <= config.getint('download', 'diff_days')]
+
     ## non présent
     already_downloaded = read_already_download(config)
     elements = [el for el in elements if el[2] not in already_downloaded]
+    
+    if names:
+        names_elements = []
+        for name in names:
+            name = name.replace('.', '\.')
+            names_elements += [el for el in elements if re.match(name, el[2], re.I)]
+        print(names_elements)
+        exit()
+        return names_elements
+        
+    ## datant d'une semaine
+    today = datetime.datetime.now().date()
+    elements = [el for el in elements if (today - el[3].date()).days <= config.getint('download', 'diff_days')]
+
+    if limit:
+        elements = elements[:limit]
 
     return elements
 
@@ -116,7 +131,10 @@ def read_already_download(config):
     return [line.strip() for line in open(config.get('download', 'already_downloaded'), 'r').readlines()]
 
 
-if __name__ == '__main__':
+@click.command()
+@click.option('--limit', default=None, show_default=True, type=int)
+@click.argument('names', nargs=-1)
+def main(limit, names):
 
     # logs
     requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
@@ -127,7 +145,11 @@ if __name__ == '__main__':
     elements = parse_rows(config, config.get('server', 'uri'), rows)
 
     # filtrer les éléments à télécharger
-    elements = filter_medias(config, elements)
+    elements = filter_medias(config, elements, limit, names)
 
     # téléchargement
     update_medias(config, elements)
+
+
+if __name__ == '__main__':
+    main()
