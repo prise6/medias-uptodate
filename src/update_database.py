@@ -89,8 +89,6 @@ def filter_medias(config, elements, limit, names):
         for name in names:
             name = name.replace('.', '\.')
             names_elements += [el for el in elements if re.match(name, el[2], re.I)]
-        print(names_elements)
-        exit()
         return names_elements
         
     ## datant d'une semaine
