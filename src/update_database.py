@@ -39,7 +39,7 @@ def parse_cells(config, uri, row):
         type_file_id, # 0. type de l'element
         os.path.join(uri, cells[1].find('a')['href'].strip()), # 1. url
         cells[1].find('a').text.strip(), # 2. nom
-        datetime.datetime.strptime(cells[2].text.strip(), '%d-%b-%Y %H:%M'), # 3. date
+        datetime.datetime.strptime(cells[2].text.strip(), '%Y-%m-%d %H:%M'), # 3. date
         cells[3].text.strip() # 4. taille
     ]
 
