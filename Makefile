@@ -24,7 +24,7 @@ build-prod:
 	docker build -t medias-uptodate-prod:latest -f Dockerfile-prod .
 
 update_database:
-	docker run -v ${PWD}:/app -v /mnt/samba_sfr:/app/datas/medias medias-uptodate-prod:latest python -m src.update_database --limit $(LIMIT) $(NAMES)
+	docker run --rm -v ${PWD}:/app -v /mnt/samba_sfr:/app/datas/medias medias-uptodate-prod:latest python -m src.update_database --limit $(LIMIT) $(NAMES)
 
 ##
 ## PYTHON COMMANDS
